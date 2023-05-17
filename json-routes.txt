@@ -1,0 +1,3 @@
+baseurl: https://jsonplaceholder.typicode.com
+get one post: GET /posts/1
+get one user: GET /users/1

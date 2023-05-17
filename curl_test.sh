@@ -5,7 +5,8 @@
 # --------------------------------------
 
 # Read each line of the file into an array
-mapfile -t lines <./sites
+# mapfile -t lines <./sites
+mapfile -t lines <./json-routes.txt
 
 # find length of the array
 len="${#lines[@]}"
@@ -46,17 +47,18 @@ for ((i = 1; i < len; i++)); do
 
 	echo "$key ($method -> $route)"
 
-	# extract HTTP status code -- will need to change this section drastically
-	# Probably compare curl json output with expected output + expected status code
-	# Probably cross reference $key against another file that contains required output via grep/awk
-	# Or a folder of individual files that have the key as a fileName and the output as content
-	statuscode=$(curl --silent --head "$baseurl$route" | awk '/^HTTP/{print $2}')
-	if [[ $statuscode -eq 200 ]]; then
-		echo "pass"
-		((++score))
-	else
-		echo "fail"
-	fi
+	# -o- send output to stdout
+	# -s  hide progress
+	# $'\1' first argument (response) plus marker to use to seperate
+	# %{response_code} curl variable to extract http status code
+	res=$(curl -o- -s "$baseurl$route" -w $'\1'"%{response_code}")
+	body="${res%$'\1'*}"
+	statuscode="${res#*$'\1'}"
+
+	echo "status: $statuscode"
+	echo ""
+	echo "$body"
+
 	echo "---- ---- ----"
 done
 
