@@ -46,6 +46,8 @@ for ((i = 1; i < len; i++)); do
 	route="${val#*"${space}"}"
 
 	echo "$key ($method -> $route)"
+	expectedCode=$(jq .statusCode "./routes/$key.json")
+	expectedRes=$(jq .response "./routes/$key.json")
 
 	# -o- send output to stdout
 	# -s  hide progress
@@ -56,7 +58,7 @@ for ((i = 1; i < len; i++)); do
 	statuscode="${res#*$'\1'}"
 	passing=0
 
-	if [[ statuscode -eq 200 ]]; then
+	if [[ statuscode -eq expectedCode ]]; then
 		echo "statuscode: OK"
 		((passing++))
 	else
@@ -64,12 +66,11 @@ for ((i = 1; i < len; i++)); do
 	fi
 
 	#figure out how to test body
-	if [[ 1 -eq 1 ]]; then
+	if [[ "$body" == "$expectedRes" ]]; then
 		echo "response: OK"
 		((passing++))
 	else
 		echo "response: Fail"
-		echo "$body"
 	fi
 
 	echo "passing: $passing/2"
