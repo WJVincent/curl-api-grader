@@ -1,0 +1,4 @@
+baseurl: https://en.wikipedia.org/wiki
+get one cat: GET /Cat
+get one dog: GET /Dog
+create an unknown: POST /Asdfasdfasdfa
