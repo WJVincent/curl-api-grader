@@ -54,11 +54,29 @@ for ((i = 1; i < len; i++)); do
 	res=$(curl -o- -s "$baseurl$route" -w $'\1'"%{response_code}")
 	body="${res%$'\1'*}"
 	statuscode="${res#*$'\1'}"
+	passing=0
 
-	echo "status: $statuscode"
-	echo ""
-	echo "$body"
+	if [[ statuscode -eq 200 ]]; then
+		echo "statuscode: OK"
+		((passing++))
+	else
+		echo "statuscode: Fail"
+	fi
 
+	#figure out how to test body
+	if [[ 1 -eq 1 ]]; then
+		echo "response: OK"
+		((passing++))
+	else
+		echo "response: Fail"
+		echo "$body"
+	fi
+
+	echo "passing: $passing/2"
+
+	if [[ passing -eq 2 ]]; then
+		((score++))
+	fi
 	echo "---- ---- ----"
 done
 
